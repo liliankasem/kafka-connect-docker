@@ -87,19 +87,6 @@ I actually preferred this method as it was easier to follow along and see respon
 #### Create a FileSink Connector
 `docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/file/output.txt"}}' http://connect:8083/connectors`
 
-Error:
-```
-curl: (3) [globbing] unmatched close brace/bracket in column 32
-100   281  100   274  100     7  15605    398 --:--:-- --:--:-- --:--:-- 15605
-{"error_code":500,"message":"Unexpected character (''' (code 39)): expected a valid value (number, String, array, object, 'true', 'false' or 'null')\n at [Source: (org.glassfish.jersey.message.internal.ReaderInterceptorExecutor$UnCloseableInputStream); line: 1, column: 2]"}
-```
-
-Turns out it's a bug that has just been fixed, the image we're using isn't up to date.
-
-https://github.com/apache/kafka/pull/5125
-
-NB: This error is happening for this image version `confluentinc/cp-kafka-connect:5.0.0-beta30` and may not be the case for `latest`
-
 #### Check status of sink connector
 `docker exec connect curl -s -X GET http://connect:8083/connectors/quickstart-file-sink/status`
 

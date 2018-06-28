@@ -28,7 +28,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   connect:
-    image: confluentinc/cp-kafka-connect:5.0.0-beta30
+    image: confluentinc/cp-kafka-connect:latest
     hostname: connect
     container_name: connect
     depends_on:
