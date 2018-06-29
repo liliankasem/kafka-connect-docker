@@ -9,7 +9,6 @@ These commands are using the names and port numbers based on the docker-compose.
 
 (NB: for the kafka broker, I'm using port 9094 instead of the normal 9092/93 ports because they are already in use by my SB emulator)
 
-
 #### Spin up Kafka, Zookeeper and Connect
 `docker-compose up`
 
@@ -92,6 +91,29 @@ I actually preferred this method as it was easier to follow along and see respon
 
 #### Check that the connector worked by viewing the content of the output file
 `docker exec connect cat /tmp/quickstart/file/output.txt`
+
+## Adding a plugin [Example: twitter source]
+Example of adding a connector to your Kafka connect cluster.
+
+Follow steps in this repo to get the .jar file:
+
+https://github.com/Eneco/kafka-connect-twitter
+
+#### Copy jar file into the Kafka Connect cluster
+
+`docker cp C:\kafka-connect-jars\kafka-connect-twitter-0.1-jar-with-dependencies.jar connect:/usr/share/java`
+
+You should be able to see that it has been copied over if you run:
+
+`docker exec connect ls /usr/share/java`
+
+#### Create a topic for the twitter messages to live
+`docker exec connect kafka-topics --create --topic twitter --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181`
+
+#### Create Twitter Source Connector
+Now should use REST API to deploy
+
+`//TODO`
 
 ## Cleanup
 
