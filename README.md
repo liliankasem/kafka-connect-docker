@@ -7,8 +7,6 @@ Following this quickstart guide: https://docs.confluent.io/current/installation/
 
 These commands are using the names and port numbers based on the docker-compose.yml file provided.
 
-(NB: for the kafka broker, I'm using port 9094 instead of the normal 9092/93 ports because they are already in use by my SB emulator)
-
 #### Spin up Kafka, Zookeeper and Connect
 `docker-compose up`
 
@@ -32,10 +30,10 @@ NB: You can run all of the following commands through opening a bash window for 
 `docker exec kafka kafka-topics --describe --topic foo --zookeeper zookeeper:2181`
 
 #### Send msg to topic using built-in console producer
-`docker exec kafka  bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9094 --topic foo && echo 'Produced 42 messages.'"`
+`docker exec kafka  bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 42 messages.'"`
 
 #### Read back the msg from the topic using the built-in console consumer
-`docker exec kafka kafka-console-consumer --bootstrap-server localhost:9094 --topic foo --from-beginning --max-messages 42`
+`docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic foo --from-beginning --max-messages 42`
 
 ## Kafka Connect
 
@@ -81,7 +79,7 @@ I actually preferred this method as it was easier to follow along and see respon
 `docker exec connect curl -s -X GET http://connect:8083/connectors/quickstart-file-source/status`
 
 #### Read 10 records from the quickstart-data topic (using built in console consumer)
-`docker exec connect kafka-console-consumer --bootstrap-server kafka:9094 --topic quickstart-data --from-beginning --max-messages 10`
+`docker exec connect kafka-console-consumer --bootstrap-server kafka:9092 --topic quickstart-data --from-beginning --max-messages 10`
 
 #### Create a FileSink Connector
 `docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name": "quickstart-file-sink", "config": {"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector", "tasks.max":"1", "topics":"quickstart-data", "file": "/tmp/quickstart/file/output.txt"}}' http://connect:8083/connectors`
