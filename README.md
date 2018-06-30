@@ -30,7 +30,7 @@ NB: You can run all of the following commands through opening a bash window for 
 `docker exec kafka kafka-topics --describe --topic foo --zookeeper zookeeper:2181`
 
 #### Send msg to topic using built-in console producer
-`docker exec kafka  bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 42 messages.'"`
+`docker exec kafka bash -c "seq 42 | kafka-console-producer --request-required-acks 1 --broker-list localhost:9092 --topic foo && echo 'Produced 42 messages.'"`
 
 #### Read back the msg from the topic using the built-in console consumer
 `docker exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic foo --from-beginning --max-messages 42`
@@ -56,14 +56,7 @@ NB: You can run all of the following commands through opening a bash window for 
 
 #### Create a file with dummy data for our FileSource Connector to read from
 The quickstart tutorial says to use:
-`docker exec connect sh -c 'seq 1000 > /tmp/quickstart/file/input.txt'`
-
-On Docker for Windows, I get this error: `The system cannot find the path specified.`.
-
-So instead, I just went directly into the container to run the command and that works fine:
-
-- `docker exec -it connect bash`
-- inside the container >>> `seq 1000 > /tmp/quickstart/file/input.txt`
+`docker exec connect bash -c 'seq 1000 > /tmp/quickstart/file/input.txt'`
 
 #### Note about curl commands
 For all curl commands, you can use Postman (or something similar) as the connect REST API is available on localhost:8083 e.g.:
@@ -114,14 +107,12 @@ You can check that your new plugin/connector jar is ready to use by checking ava
 #### Create a topic for the twitter messages to live
 `docker exec connect kafka-topics --create --topic twitter --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181`
 
-NB: I noticed the a `tweets` topic was created and all of the tweets from my twitter source were going there instead of the twitter topic I setup, despite my config pointing at `twitter`.
-
 #### Create Twitter Source Connector
 The source receives tweets from the Twitter Streaming API using Hosebird, which are fed into Kafka either as a TwitterStatus structure (default) or as plain strings.
 
 Change the data (connector config json) to include your twitter key/token/secrets:
 
-`docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name":"twitter-source","config":{"connector.class":"com.eneco.trading.kafka.connect.twitter.TwitterSourceConnector","tasks.max":1,"topics":"twitter","twitter.consumerkey":"YOUR_CONSUMER_KEY","twitter.consumersecret":"YOUR_CONSUMER_SECRET","twitter.token":"YOUR_TOKEN","twitter.secret":"YOUR_SECRET","track.terms":"azure"}}' http://connect:8083/connectors`
+`docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name":"twitter-source","config":{"connector.class":"com.eneco.trading.kafka.connect.twitter.TwitterSourceConnector","tasks.max":1,"topic":"twitter","twitter.consumerkey":"YOUR_CONSUMER_KEY","twitter.consumersecret":"YOUR_CONSUMER_SECRET","twitter.token":"YOUR_TOKEN","twitter.secret":"YOUR_SECRET","track.terms":"azure"}}' http://connect:8083/connectors`
 
 #### Create Twitter Sink Connector
 The sink receives plain strings from Kafka, which are tweeted using Twitter4j.
@@ -131,6 +122,16 @@ Change the data (connector config json) to include your twitter key/token/secret
 `docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name":"twitter-sink","config":{"connector.class":"com.eneco.trading.kafka.connect.twitter.TwitterSinkConnector","tasks.max":1,"topics":"twitter","twitter.consumerkey":"YOUR_CONSUMER_KEY","twitter.consumersecret":"YOUR_CONSUMER_SECRET","twitter.token":"YOUR_TOKEN","twitter.secret":"YOUR_SECRET"}}' http://connect:8083/connectors`
 
 If you prefer, you can setup a file sink like we did before in the steps above and just change the topic to whatever topic your twitter source is feeding into i.e. 'twitter' or 'tweets'.
+
+### IMPORTANT NOTE
+
+I noticed a `tweets` topic was created and all of the tweets from my twitter source were going there instead of the twitter topic I setup, despite my config pointing at `twitter`. So, I created my twitter sink using `tweets` as the topic instead of `twitter` to see results.
+
+This might be because I changed the config property `topic` to `topics` when creating my twitter source because using `topic` gave me this error:
+
+`{"error_code":500,"message":"Must configure one of topics or topics.regex"}`.
+
+Turns out the default topic for the twitter source is 'tweets' which explains this. I believe there is a bug in the twitter source connector config for the `topic` property.
 
 ## Cleanup
 
