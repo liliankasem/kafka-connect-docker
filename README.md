@@ -93,9 +93,9 @@ I actually preferred this method as it was easier to follow along and see respon
 `docker exec connect cat /tmp/quickstart/file/output.txt`
 
 ## Adding a plugin [Example: twitter source]
-Example of adding a connector to your Kafka connect cluster.
+Example of adding a connector to your Kafka Connect cluster.
 
-Follow steps in this repo to get the .jar file:
+Follow the steps in this repository to get the .jar file:
 
 https://github.com/Eneco/kafka-connect-twitter
 
@@ -107,13 +107,32 @@ You should be able to see that it has been copied over if you run:
 
 `docker exec connect ls /usr/share/java`
 
+Restart the Kafka Connect container so that the worker picks up the new jar (`ctrl+C` then `docker-compose up` again).
+
+You can check that your new plugin/connector jar is ready to use by checking available plugins:
+
+`docker exec connect curl -s -X GET http://connect:8083/connector-plugins`
+
 #### Create a topic for the twitter messages to live
 `docker exec connect kafka-topics --create --topic twitter --partitions 1 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181`
 
-#### Create Twitter Source Connector
-Now should use REST API to deploy
+NB: I noticed the a `tweets` topic was created and all of the tweets from my twitter source were going there instead of the twitter topic I setup, despite my config pointing at `twitter`.
 
-`//TODO`
+#### Create Twitter Source Connector
+The source receives tweets from the Twitter Streaming API using Hosebird, which are fed into Kafka either as a TwitterStatus structure (default) or as plain strings.
+
+Change the data (connector config json) to include your twitter key/token/secrets:
+
+`docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name":"twitter-source","config":{"connector.class":"com.eneco.trading.kafka.connect.twitter.TwitterSourceConnector","tasks.max":1,"topics":"twitter","twitter.consumerkey":"YOUR_CONSUMER_KEY","twitter.consumersecret":"YOUR_CONSUMER_SECRET","twitter.token":"YOUR_TOKEN","twitter.secret":"YOUR_SECRET","track.terms":"azure"}}' http://connect:8083/connectors`
+
+#### Create Twitter Sink Connector
+The sink receives plain strings from Kafka, which are tweeted using Twitter4j.
+
+Change the data (connector config json) to include your twitter key/token/secrets:
+
+`docker exec connect curl -X POST -H "Content-Type: application/json" --data '{"name":"twitter-sink","config":{"connector.class":"com.eneco.trading.kafka.connect.twitter.TwitterSinkConnector","tasks.max":1,"topics":"twitter","twitter.consumerkey":"YOUR_CONSUMER_KEY","twitter.consumersecret":"YOUR_CONSUMER_SECRET","twitter.token":"YOUR_TOKEN","twitter.secret":"YOUR_SECRET"}}' http://connect:8083/connectors`
+
+If you prefer, you can setup a file sink like we did before in the steps above and just change the topic to whatever topic your twitter source is feeding into i.e. 'twitter' or 'tweets'.
 
 ## Cleanup
 
