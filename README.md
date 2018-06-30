@@ -131,7 +131,11 @@ This might be because I changed the config property `topic` to `topics` when cre
 
 `{"error_code":500,"message":"Must configure one of topics or topics.regex"}`.
 
-Turns out the default topic for the twitter source is 'tweets' which explains this. I believe there is a bug in the twitter source connector config for the `topic` property.
+Turns out the default topic for the twitter source is 'tweets' which explains this. I believe there is a bug in the twitter source connector for the `topic` property.
+
+Someone has put in a fix for this but it has not been merged yet (at the time of writing this):
+
+https://github.com/Eneco/kafka-connect-twitter/pull/53
 
 ## Cleanup
 
