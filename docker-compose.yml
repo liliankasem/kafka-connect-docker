@@ -31,3 +31,4 @@ services:
     environment:
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: connect-cluster-A
+      CONNECT_PLUGIN_PATH: /usr/share/java

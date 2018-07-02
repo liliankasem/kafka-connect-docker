@@ -97,7 +97,7 @@ https://github.com/Eneco/kafka-connect-twitter
 
 #### Copy jar file into the Kafka Connect cluster
 
-`docker cp C:\kafka-connect-jars\kafka-connect-twitter-0.1-jar-with-dependencies.jar connect:/usr/share/java`
+`docker cp C:\kafka-connect-jars\kafka-connect-twitter-0.1-jar-with-dependencies.jar connect:/usr/share/java/`
 
 You should be able to see that it has been copied over if you run:
 
