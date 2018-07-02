@@ -1,7 +1,12 @@
 # kafka-connect-docker
-Using confluent https://github.com/confluentinc/cp-docker-images
-
 Following this quickstart guide: https://docs.confluent.io/current/installation/docker/docs/quickstart.html
+
+For the confluent, using these images:
+https://github.com/confluentinc/cp-docker-images
+
+For vanilla Kafka, usign these images:
+https://github.com/1ambda/docker-kafka-connect
+
 
 ## Start
 

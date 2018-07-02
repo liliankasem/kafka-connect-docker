@@ -2,12 +2,12 @@
 version: '2'
 services:
   connect:
-    image: liliankasem/kafka-connect:1.1.0
+    image: confluentinc/cp-kafka-connect:latest
     hostname: connect
     container_name: connect
     ports:
       - "8083:8083"
-    environment:
+    environment: 
       CONNECT_BOOTSTRAP_SERVERS: YOUR.EH.FQDN:9093
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
@@ -32,3 +32,4 @@ services:
       CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_SSL
       CONNECT_CONSUMER_SSASL_MECHANISM: PLAIN
       CONNECT_CONSUMER_SSASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="$$ConnectionString" password="YOUR.EH.CONNECTION.STRING";
+      CONNECT_PLUGIN_PATH: /usr/share/java
