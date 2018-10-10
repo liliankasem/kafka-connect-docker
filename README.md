@@ -13,9 +13,12 @@ https://github.com/1ambda/docker-kafka-connect
 These commands are using the names and port numbers based on the docker-compose.yml file provided.
 
 #### Spin up Kafka, Zookeeper and Connect
-`docker-compose up`
 
-(add `-d` if you want to run in detached mode. You can use `docker logs <containerName>` to see the logs later if needed)
+On Mac and Linux, you should just be able to run a `docker-compose up`
+
+On Windows, you'll have to use the confluent docker file. For some reason, Docker for Windows doesn't pick up kafka commands correctly for that image. The confluent docker image works better, and you can use it with `docker-compose -f docker-compose-confluent.yml up`
+
+(either way, add `-d` if you want to run in detached mode. You can use `docker logs <containerName>` to see the logs later if needed)
 
 #### To see the running docker containers
 `docker ps`
